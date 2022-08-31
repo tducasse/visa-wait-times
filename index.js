@@ -17,11 +17,13 @@ const request = async (url) =>
     });
   });
 
-const visas = [
-  "Visitor Visa",
-  "Student/Exchange Visitor Visas",
-  "All Other Nonimmigrant Visas",
-];
+const visaNames = {
+  visitor: "Visitor Visa",
+  student: "Student/Exchange Visitor Visas",
+  other: "All Other Nonimmigrant Visas",
+};
+
+const visas = Object.values(visaNames);
 
 const getWaitTimes = (waitTimes) =>
   waitTimes
@@ -39,13 +41,18 @@ const run = async () => {
       const { code, value } = city;
       const response = await request(buildUrl(code));
       const waitTimes = getWaitTimes(response);
-      return {
-        city: value,
-        ...waitTimes,
-      };
+      return (
+        waitTimes[visas[0]] !== "" && {
+          city: value,
+          ...waitTimes,
+        }
+      );
     })
   );
-  console.log(results);
+  results
+    .filter(Boolean)
+    .sort((a, b) => Number(a[visaNames.other]) - Number(b[visaNames.other]))
+    .forEach((r) => console.log(r.city.padEnd(20), r[visaNames.other]));
 };
 
 run();
