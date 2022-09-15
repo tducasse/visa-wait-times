@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 *.pyc
+
+python/results.csv
